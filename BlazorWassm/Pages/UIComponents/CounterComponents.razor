@@ -1,0 +1,27 @@
+﻿@using BlazorWassm.StateContainer
+@namespace BlazorWassm.Pages.UIComponents
+@inject CounterStateContainer _stateContainer
+
+<div>
+    <label>Counter @Id</label>
+    <label>@count</label>
+    <button @onclick="_stateContainer.Increment">Increment</button>
+</div>
+
+@code {
+
+    [Parameter]
+    public int Id { get; set; }
+
+    private int count = 0;
+
+    protected override void OnInitialized()
+    {
+        _stateContainer.OnChange += i =>
+        {
+            count = i;
+            StateHasChanged();
+        };
+    }
+
+}

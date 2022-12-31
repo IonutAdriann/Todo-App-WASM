@@ -1,0 +1,158 @@
+﻿@page "/ViewTodos"
+@using Domain.Models
+@using HttpClients.ClientInterfaces
+@using UIComponents
+@using Domain.DTOs
+@inject ITodoService todoService
+@inject NavigationManager navmgr
+
+<h3>Todos</h3>
+<div class="filter-bar">
+    <div class="filters-container">
+    <img src="icons/@(doShowFilters ? "clear_" : "")funnel.png" class="funnel" @onclick="@(() => doShowFilters = !doShowFilters)" alt="Funnel"/>
+    @if (doShowFilters)
+    {
+        <div class="filter">
+            <label>Username:</label>
+            <input type="text" @bind="usernameFilter"/>
+        </div>
+        <div class="filter">
+            <label>User id:</label>
+            <input type="number" @bind="userIdFilter"/>
+        </div>
+        <div class="filter">
+            <label>Is completed?</label>
+            <select @bind="completedStatusFilter">
+                <option value="all">All</option>
+                <option value="true">Yes</option>
+                <option value="false">No</option>
+            </select>
+        </div>
+        <div class="filter">
+            <label>Title contains:</label>
+            <input type="text" @bind="titleContainsFilter"/>
+        </div>
+    }
+    </div>
+</div>
+
+<div>
+    <button @onclick="LoadTodos">Load</button>
+</div>
+
+@if (_todos == null)
+{
+}
+else if (!_todos.Any())
+{
+    <p>No Todos to display </p>
+}
+else
+{
+    <table class ="table">
+        <thead>
+            <tr>
+                <th>Todo ID</th>
+                <th>Owner ID</th>
+                <th>Title</th>
+                <th>Completed?</th>
+                <th>Edit</th>
+                <th>Delete?</th>
+            </tr>
+        </thead>
+        <tbody>
+        @foreach (var item in _todos)
+        {
+            <tr>
+                <td>@item.Id</td>
+                <td>@item.Owner.UserName</td>
+                <td>@item.Title</td>
+                <td>@item.IsCompleted</td>
+                <td>
+                    <FancyCheckBox IsCompleted="@item.IsCompleted" OnChange="@((status) => CompleteTodo(item, status))"/>
+                </td>
+                <td>
+                    <img src="icons/edit.gif" class="funnel" @onclick="@(() => navmgr.NavigateTo($"/EditTodo/{item.Id}"))"/>
+                </td>
+                <td>
+                    <label @onclick="@(() => RemoveTodo(item.Id))" style="cursor:pointer; color: red; font-weight: bold">
+                        &#x2717
+                    </label>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+}
+@if (!string.IsNullOrEmpty(msg))
+{
+    <label style="color: red">@msg</label>
+}
+
+@code {
+    private IEnumerable<Todo>? _todos;
+    private string msg = "";
+    private bool doShowFilters = false;
+
+    private string? usernameFilter;
+    private int? userIdFilter;
+    private string? completedStatusFilter;
+    private string? titleContainsFilter;
+
+    private async Task LoadTodos()
+    {
+        try
+        {
+            bool? completedFilterValue = null;
+            if (!string.IsNullOrEmpty(completedStatusFilter) && !completedStatusFilter.Equals("all"))
+            {
+                completedFilterValue = bool.Parse(completedStatusFilter);
+            }
+            _todos = await todoService.GetAsync(usernameFilter, userIdFilter, completedFilterValue, titleContainsFilter);
+
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+    private async Task CompleteTodo(Todo item, bool status)
+    {
+        TodoUpdateDto dto = new(item.Id)
+        {
+            IsCompleted = status
+        };
+        try
+        {
+            await todoService.UpdateAsync(dto);
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+        
+    }
+
+    private async Task RemoveTodo(int todoId)
+    {
+        msg = "";
+
+        try
+        {
+            await todoService.DeleteAsync(todoId);
+
+            var list = new List<Todo>(_todos!);
+            list.RemoveAll(todo => todo.Id == todoId);
+            _todos = list.AsEnumerable();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            msg = e.Message;
+        }
+    }
+
+}

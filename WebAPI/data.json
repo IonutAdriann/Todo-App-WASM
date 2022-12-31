@@ -1,0 +1,86 @@
+{
+  "Users": [
+    {
+      "Id": 1,
+      "UserName": "Ionut",
+      "Todos": null
+    },
+    {
+      "Id": 2,
+      "UserName": "Edi",
+      "Todos": null
+    },
+    {
+      "Id": 3,
+      "UserName": "Geani",
+      "Todos": null
+    },
+    {
+      "Id": 4,
+      "UserName": "Martin",
+      "Todos": null
+    },
+    {
+      "Id": 5,
+      "UserName": "Drugulete",
+      "Todos": null
+    },
+    {
+      "Id": 6,
+      "UserName": "Ionila",
+      "Todos": null
+    },
+    {
+      "Id": 7,
+      "UserName": "test",
+      "Todos": null
+    },
+    {
+      "Id": 8,
+      "UserName": "Adrian",
+      "Todos": null
+    },
+    {
+      "Id": 9,
+      "UserName": "Mucea",
+      "Todos": null
+    },
+    {
+      "Id": 10,
+      "UserName": "Nice",
+      "Todos": null
+    }
+  ],
+  "Todos": [
+    {
+      "Id": 1,
+      "Owner": {
+        "Id": 1,
+        "UserName": "Ionut",
+        "Todos": null
+      },
+      "Title": "Gaming",
+      "IsCompleted": true
+    },
+    {
+      "Id": 3,
+      "Owner": {
+        "Id": 4,
+        "UserName": "Martin",
+        "Todos": null
+      },
+      "Title": "Ionila",
+      "IsCompleted": true
+    },
+    {
+      "Id": 4,
+      "Owner": {
+        "Id": 6,
+        "UserName": "Ionila",
+        "Todos": null
+      },
+      "Title": "Cimicianga",
+      "IsCompleted": true
+    }
+  ]
+}
